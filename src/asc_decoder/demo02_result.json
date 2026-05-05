@@ -1,0 +1,162 @@
+[
+  {
+    "channel": "12",
+    "name": "0x1DD",
+    "value": "32 B6 B5 F0 80 02 80 05 29 00 00 00 00",
+    "absolute_time": "2026-02-21 16:20:00.965",
+    "relative_time": 0.0,
+    "frame_type": "CANFD",
+    "dlc": 13,
+    "direction": "Rx"
+  },
+  {
+    "channel": "12",
+    "name": "0x568",
+    "value": "32 08 95 14 04 00 00 19 0A 0C 00 00 00",
+    "absolute_time": "2026-02-21 16:20:00.965",
+    "relative_time": 0.00026,
+    "frame_type": "CANFD",
+    "dlc": 13,
+    "direction": "Rx"
+  },
+  {
+    "channel": "L19",
+    "name": "0x29",
+    "value": "00 00 00 30 00 91 C0 00",
+    "absolute_time": "2026-02-21 16:20:00.968",
+    "relative_time": 0.00303,
+    "frame_type": "LIN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "L20",
+    "name": "0x2B",
+    "value": "73 76 C0 FF FF FF FF FF",
+    "absolute_time": "2026-02-21 16:20:00.968",
+    "relative_time": 0.00307,
+    "frame_type": "LIN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "L23",
+    "name": "0x35",
+    "value": "01 01 01 01 2E 00 00 00",
+    "absolute_time": "2026-02-21 16:20:00.968",
+    "relative_time": 0.00309,
+    "frame_type": "LIN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "L21",
+    "name": "0x2B",
+    "value": "73 76 C0 FF FF FF FF FF",
+    "absolute_time": "2026-02-21 16:20:00.968",
+    "relative_time": 0.00313,
+    "frame_type": "LIN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "L22",
+    "name": "0x27",
+    "value": "00 00 00 64 00 00 00 64",
+    "absolute_time": "2026-02-21 16:20:00.968",
+    "relative_time": 0.00315,
+    "frame_type": "LIN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "L18",
+    "name": "0x6",
+    "value": "40 FF FF FF 80 76 01 59",
+    "absolute_time": "2026-02-21 16:20:00.968",
+    "relative_time": 0.00319,
+    "frame_type": "LIN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "14",
+    "name": "0x1E7",
+    "value": "00 00 25 01 72 79 A7 00",
+    "absolute_time": "2026-02-21 16:20:00.969",
+    "relative_time": 0.00413,
+    "frame_type": "CAN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "13",
+    "name": "0x379",
+    "value": "32 A2 06 8E 00 00 00 05 55 55 00 00 00",
+    "absolute_time": "2026-02-21 16:20:00.969",
+    "relative_time": 0.00416,
+    "frame_type": "CANFD",
+    "dlc": 13,
+    "direction": "Rx"
+  },
+  {
+    "channel": "14",
+    "name": "0x2A0",
+    "value": "00 01 00 00 00 00 78 00",
+    "absolute_time": "2026-02-21 16:20:00.969",
+    "relative_time": 0.00418,
+    "frame_type": "CAN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "12",
+    "name": "0x11E",
+    "value": "48 3F A6 09 00 00 00 00 00 20 00 20 00 20",
+    "absolute_time": "2026-02-21 16:20:00.969",
+    "relative_time": 0.00421,
+    "frame_type": "CANFD",
+    "dlc": 14,
+    "direction": "Rx"
+  },
+  {
+    "channel": "2",
+    "name": "0x372",
+    "value": "32 6B 0B 57 5A C2 D5 CF 7A 05 83 57 A6",
+    "absolute_time": "2026-02-21 16:20:00.969",
+    "relative_time": 0.00423,
+    "frame_type": "CANFD",
+    "dlc": 13,
+    "direction": "Rx"
+  },
+  {
+    "channel": "14",
+    "name": "0x1A3",
+    "value": "00 36 00 00 00 00 00 00",
+    "absolute_time": "2026-02-21 16:20:00.971",
+    "relative_time": 0.00607,
+    "frame_type": "CAN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "14",
+    "name": "0x1A4",
+    "value": "00 00 00 00 A9 E9 80 00",
+    "absolute_time": "2026-02-21 16:20:00.971",
+    "relative_time": 0.00624,
+    "frame_type": "CAN",
+    "dlc": 8,
+    "direction": "Rx"
+  },
+  {
+    "channel": "14",
+    "name": "0x5CA",
+    "value": "00 40 00 00 00 00 00 00",
+    "absolute_time": "2026-02-21 16:20:00.971",
+    "relative_time": 0.00648,
+    "frame_type": "CAN",
+    "dlc": 8,
+    "direction": "Rx"
+  }
+]
