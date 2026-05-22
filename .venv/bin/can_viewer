@@ -1,0 +1,6 @@
+#!/Users/mac/2026/ai_coding_project/can_tools/.venv/bin/python3.12
+import sys
+from can.viewer import main
+if __name__ == '__main__':
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
+    sys.exit(main())

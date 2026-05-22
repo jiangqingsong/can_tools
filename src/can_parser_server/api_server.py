@@ -30,7 +30,7 @@ async def parse(
     batch_id: str = Form(..., description="批次标识"),
     data_file: UploadFile = File(..., description="数据文件（ASC/BLF/Excel/CSV）"),
     dbc_file: Optional[UploadFile] = File(default=None, description="DBC 描述文件（csv 类型不需要）"),
-    batch_size: int = Form(default=5000),
+    batch_size: int = Form(default=500000),
     signal_filter_list: Optional[str] = Form(default=None, description='JSON数组，如 ["VehicleSpeed"]')
 ):
     """
@@ -155,4 +155,4 @@ async def health():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app="main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app="api_server:app", host="0.0.0.0", port=8000, reload=True)
