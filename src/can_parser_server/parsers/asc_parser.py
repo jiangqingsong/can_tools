@@ -4,7 +4,7 @@ from datetime import datetime
 import logging
 from typing import List, Dict
 
-from writer.starrocks_writer import StarRocksDataWriter
+from writer.can_2_sr import StarRocksDataWriter
 
 logger = logging.getLogger("rc")
 # 设置 logger 级别为 INFO

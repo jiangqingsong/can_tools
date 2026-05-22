@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 from datetime import datetime
 import logging
@@ -47,7 +46,7 @@ def decode(batch_id: str, data_file: str, batch_size: int = 5000):
         df = pd.read_excel(data_file, dtype=str, engine='openpyxl')
 
     # 第4列及以后为信号列
-    signal_cols = df.columns[3:].toList()
+    signal_cols = df.columns[3:].tolist()
     print(f"读取文件成功! 共 {len(df)} 行, {len(signal_cols)} 个信号列")
 
     writer = CsvDataWriter()
