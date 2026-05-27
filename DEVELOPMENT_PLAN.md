@@ -62,22 +62,22 @@
 
 ---
 
-## Phase 6：分析场景模型（待开发）⬜
+## Phase 6：分析场景模型 ✅
 
 参考文档：`分析场景模型优化方案.md`
 
 | 编号 | 任务 | 产出物 | 验证方式 | 状态 |
 |------|------|--------|----------|------|
-| 6.1 | 创建配置目录和模型配置文件（dbc_files 为数组） | `config/models_config.json` | JSON 格式合法，至少包含 1 个车型 + 1 个模型（关联多个 DBC 文件） | ⬜ |
-| 6.2 | 创建 DBC 文件目录（按车型分子目录） | `dbc_files/{vehicle_model}/` | 目录存在，每个车型目录下至少 1 个 DBC 文件 | ⬜ |
-| 6.3 | api_server.py 启动时加载模型配置 | `api_server.py` 新增 `load_models_config()` | 启动日志打印已加载的车型和模型列表 | ⬜ |
-| 6.4 | POST /api/v1/parse 新增 vehicle_model + model_name 参数 | `api_server.py` | 传入 vehicle_model + model_name 后自动加载关联的一组 DBC 文件和 signal_filter_list，解析成功 | ⬜ |
-| 6.5 | model_name 逻辑：从 dbc_files/{vehicle_model}/ 读取多个 DBC 文件 | `api_server.py` 中的解析线程逻辑 | 不传 dbc_file 参数，仅靠 vehicle_model + model_name 加载多个 DBC 完成 asc/blf 解析 | ⬜ |
-| 6.6 | CSV 类型兼容 model_name | `api_server.py` | CSV + model_name 自动获取 signal_filter_list | ⬜ |
-| 6.7 | 向后兼容：不传 model_name 走原有逻辑 | `api_server.py` | 原有调用方式不受影响，所有参数行为不变 | ⬜ |
-| 6.8 | 新增 GET /api/v1/models 端点 | `api_server.py` | 返回所有车型及其模型概览 | ⬜ |
-| 6.9 | 新增 GET /api/v1/models/{vehicle_model} 端点 | `api_server.py` | 返回某车型下所有模型的 dbc_files 列表和 signal_filter_list | ⬜ |
-| 6.10 | 端到端验证 | — | 使用 vehicle_model + model_name 完整走通 asc/blf/csv 三种解析流程 | ⬜ |
+| 6.1 | 创建配置目录和模型配置文件（dbc_files 为数组） | `config/models_config.json` | JSON 格式合法，至少包含 1 个车型 + 1 个模型（关联多个 DBC 文件） | ✅ |
+| 6.2 | 创建 DBC 文件目录（按车型分子目录） | `dbc_files/{vehicle_model}/` | 目录存在，每个车型目录下至少 1 个 DBC 文件 | ✅ |
+| 6.3 | api_server.py 启动时加载模型配置 | `api_server.py` 新增 `load_models_config()` | 启动日志打印已加载的车型和模型列表 | ✅ |
+| 6.4 | POST /api/v1/parse 新增 vehicle_model + model_name 参数 | `api_server.py` | 传入 vehicle_model + model_name 后自动加载关联的一组 DBC 文件和 signal_filter_list，解析成功 | ✅ |
+| 6.5 | model_name 逻辑：从 dbc_files/{vehicle_model}/ 读取多个 DBC 文件 | `api_server.py` 中的解析线程逻辑 | 不传 dbc_file 参数，仅靠 vehicle_model + model_name 加载多个 DBC 完成 asc/blf 解析 | ✅ |
+| 6.6 | CSV 类型兼容 model_name | `api_server.py` | CSV + model_name 自动获取 signal_filter_list | ✅ |
+| 6.7 | 向后兼容：不传 model_name 走原有逻辑 | `api_server.py` | 原有调用方式不受影响，所有参数行为不变 | ✅ |
+| 6.8 | 新增 GET /api/v1/models 端点 | `api_server.py` | 返回所有车型及其模型概览 | ✅ |
+| 6.9 | 新增 GET /api/v1/models/{vehicle_model} 端点 | `api_server.py` | 返回某车型下所有模型的 dbc_files 列表和 signal_filter_list | ✅ |
+| 6.10 | 端到端验证 | — | 使用 vehicle_model + model_name 完整走通 asc/blf/csv 三种解析流程 | ✅ |
 
 ---
 
@@ -103,7 +103,7 @@
 | Phase 3 | Parser 实现 | ✅ 已完成 |
 | Phase 4 | API 服务实现 | ✅ 已完成 |
 | Phase 5 | 文档补齐 | ✅ 已完成 |
-| Phase 6 | 分析场景模型 | ⬜ 待开发 |
+| Phase 6 | 分析场景模型 | ✅ 已完成 |
 | Phase 7 | 技术债清理 | ⬜ 待排期 |
 
-**下一优先事项：** Phase 6 — 分析场景模型功能开发（方案已评审通过）
+**下一优先事项：** Phase 7 — 技术债清理

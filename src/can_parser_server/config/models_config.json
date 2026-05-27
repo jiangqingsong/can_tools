@@ -1,0 +1,29 @@
+{
+  "vehicles": {
+    "C01": {
+      "description": "C01 车型",
+      "models": {
+        "chassis_analysis": {
+          "dbc_files": ["vehicle_chassis.dbc", "vehicle_powertrain.dbc"],
+          "signal_filter_list": ["VehicleSpeed", "SteeringAngle", "BrakePressure", "MotorTorque"],
+          "description": "底盘分析场景"
+        },
+        "body_electronics": {
+          "dbc_files": ["vehicle_body.dbc"],
+          "signal_filter_list": ["DoorStatus", "WindowPosition", "LightStatus"],
+          "description": "车身电子分析场景"
+        }
+      }
+    },
+    "C11": {
+      "description": "C11 车型",
+      "models": {
+        "chassis_analysis": {
+          "dbc_files": ["vehicle_chassis.dbc"],
+          "signal_filter_list": ["VehicleSpeed", "SteeringAngle", "SuspensionHeight"],
+          "description": "底盘分析场景"
+        }
+      }
+    }
+  }
+}

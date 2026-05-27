@@ -1,12 +1,9 @@
-import os
-import sys
 import cantools
 import can
 from datetime import datetime
 import logging
 from typing import List, Dict
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + '/../')
 from writer.can_2_sr import StarRocksDataWriter
 
 logger = logging.getLogger("rc")
@@ -14,7 +11,7 @@ logger = logging.getLogger("rc")
 logger.setLevel(logging.INFO)
 
 
-def decode(batch_id: str, data_file: str, dbc_file: str,
+def decode(batch_id: str, data_file: str, dbc_files: List[str],
            batch_size: int = 5000, signal_filter_list: List[str] = None):
     """
     解码BLF文件为StarRocks数据表
@@ -22,14 +19,14 @@ def decode(batch_id: str, data_file: str, dbc_file: str,
     Args:
         batch_id: 批次ID
         data_file: BLF文件路径
-        dbc_file: DBC文件路径
+        dbc_files: DBC文件路径列表（支持多个DBC文件）
         batch_size: 每批写入 StarRocks 的条数, 默认 5000
         signal_filter_list: 需要解析的信号列表, None 或空列表表示解析所有信号
     """
 
     start = datetime.now()
     start_fmt = start.strftime('%Y-%m-%d %H:%M:%S')
-    print(f"blf decode开始:{start_fmt}, blf: {data_file}, dbc: {dbc_file}")
+    print(f"blf decode开始:{start_fmt}, blf: {data_file}, dbc_files: {dbc_files}")
 
     # 信号过滤配置
     signal_filter_set = set(signal_filter_list) if signal_filter_list else None
@@ -40,7 +37,9 @@ def decode(batch_id: str, data_file: str, dbc_file: str,
     else:
         print(f"ℹ️  信号过滤未启用，将解析全量信号")
 
-    dbc_db = cantools.database.load_file(dbc_file, encoding='gb2312')
+    dbc_db = cantools.database.load_file(dbc_files[0], encoding='gb2312')
+    for dbc_file in dbc_files[1:]:
+        dbc_db.add_dbc_file(dbc_file, encoding='gb2312')
     # asc_data = can.ASCReader(asc_file, relative_timestamp=False, encoding='utf8')
 
     blf_data = can.BLFReader(data_file)
