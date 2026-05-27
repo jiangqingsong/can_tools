@@ -38,3 +38,7 @@ Thumbs.db
 
 # Project specific
 *.log
+
+#dbc_file
+src/can_parser_server/dbc_files/
+src/can_parser_server/dbc_files/*.dbc
