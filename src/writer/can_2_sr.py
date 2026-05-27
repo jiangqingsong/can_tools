@@ -146,9 +146,9 @@ class StarRocksStreamLoader:
         csv_lines = []
         for item in batch_data:
             csv_lines.append(
-                f'{item.get("item_batch_id", default="unknown")}{sep}'
+                f'{item.get("item_batch_id", "unknown")}{sep}'
                 f'{item.get("item_dt")}{sep}'
-                f'{item.get("item_channel", default="0")}{sep}'
+                f'{item.get("item_channel", "0")}{sep}'
                 f'{item.get("item_name")}{sep}'
                 f'{item.get("item_value")}{sep}'
                 f'{current_time}'
