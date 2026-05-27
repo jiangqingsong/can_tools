@@ -1,8 +1,5 @@
 import cantools
 import can
-import os
-import re
-import tempfile
 from datetime import datetime
 import logging
 from typing import List, Dict
@@ -31,27 +28,6 @@ def decode(batch_id: str, data_file: str, dbc_files: List[str],
     start_fmt = start.strftime('%Y-%m-%d %H:%M:%S')
     print(f"asc decode开始:{start_fmt}, asc: {data_file}, dbc_files: {dbc_files}")
 
-    # 预处理 ASC 文件：修复部分工具导出的非标准日期格式（如 24小时制+PM）
-    _pat = re.compile(
-        r'^(date\s+\w+\s+)(\w+\s+\d{2}\s+)(\d{2})(:\d{2}:\d{2}(?:\.\d+)?)\s+(AM|PM)\s+(\d{4})',
-        re.IGNORECASE
-    )
-    _preprocessed_path = data_file
-    with open(data_file, 'r', encoding='utf-8', errors='replace') as _f:
-        _content = _f.read()
-    _match = _pat.search(_content)
-    if _match:
-        hour = int(_match.group(3))
-        if hour > 12:
-            hour -= 12
-            _fixed = f'{_match.group(1)}{_match.group(2)}{hour:02d}{_match.group(4)} {_match.group(5)} {_match.group(6)}'
-            _content = _pat.sub(_fixed, _content, count=1)
-            _tmp = tempfile.NamedTemporaryFile(mode='w', suffix='.asc', delete=False, encoding='utf-8')
-            _tmp.write(_content)
-            _tmp.close()
-            _preprocessed_path = _tmp.name
-            print(f"已修复ASC文件日期格式: {_match.group(0).strip()} → {_fixed.strip()}")
-
     # 信号过滤配置
     signal_filter_set = set(signal_filter_list) if signal_filter_list else None
     if signal_filter_set:
@@ -64,7 +40,7 @@ def decode(batch_id: str, data_file: str, dbc_files: List[str],
     dbc_db = cantools.database.load_file(dbc_files[0], encoding='gb2312')
     for dbc_file in dbc_files[1:]:
         dbc_db.add_dbc_file(dbc_file, encoding='gb2312')
-    asc_data = can.ASCReader(_preprocessed_path, relative_timestamp=False, encoding='utf8')
+    asc_data = can.ASCReader(data_file, relative_timestamp=False, encoding='utf8')
     print("读取dbc、ASC文件成功！")
 
     writer = StarRocksDataWriter()
@@ -154,9 +130,5 @@ def decode(batch_id: str, data_file: str, dbc_files: List[str],
         f"写入成功: {total_written}, "
         f"消息开始时间:{msg_start_time_f}, 消息结束时间:{msg_end_time_f}"
     )
-
-    # 清理预处理产生的临时文件
-    if _preprocessed_path != data_file:
-        os.remove(_preprocessed_path)
 
     return total_written
