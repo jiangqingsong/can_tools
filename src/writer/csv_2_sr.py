@@ -1,52 +1,10 @@
-import base64
-from datetime import datetime
-import logging
 import os
-import requests
-import pymysql
-from typing import List, Dict, Optional
+from typing import Dict
 
-logger = logging.getLogger("rc")
-logger.setLevel(logging.INFO)
+from writer.stream_loader import BaseStarRocksConfig, BaseStreamLoader
 
-
-class CsvStarRocksConfig:
-    """StarRocks连接配置 - CSV信号数据表, 敏感信息通过环境变量注入"""
-    HOST = os.environ.get("SR_HOST", "")
-    FE = os.environ.get("SR_FE", "")
-    QUERY_PORT = int(os.environ.get("SR_QUERY_PORT", "9030"))
-    STREAM_HTTP_PORT = int(os.environ.get("SR_STREAM_HTTP_PORT", "8010"))
-    USER = os.environ.get("SR_USER", "")
-    PD = os.environ.get("SR_PASSWORD", "")
-    DATABASE = os.environ.get("SR_DATABASE", "")
-    TABLE = os.environ.get("SR_CSV_TABLE", "ods_csv_signal_data")
-    STREAM_BATCH_SIZE = int(os.environ.get("SR_STREAM_BATCH_SIZE", "300000"))
-
-
-class CsvStreamLoader:
-    """StarRocks Stream Load高性能写入器 - CSV信号数据"""
-
-    def __init__(self, config: CsvStarRocksConfig):
-        self.config = config
-        self.stream_load_url = (
-            f"http://{config.FE}:{config.STREAM_HTTP_PORT}"
-            f"/api/{config.DATABASE}/{config.TABLE}/_stream_load"
-        )
-
-    def _create_table(self) -> bool:
-        """建表"""
-        try:
-            conn = pymysql.connect(
-                host=self.config.HOST,
-                port=self.config.QUERY_PORT,
-                user=self.config.USER,
-                password=self.config.PD,
-                database=self.config.DATABASE,
-                charset='utf8mb4',
-            )
-            cursor = conn.cursor()
-            create_table_sql = f"""
-CREATE TABLE IF NOT EXISTS `{self.config.TABLE}` (
+CSV_DDL = """
+CREATE TABLE IF NOT EXISTS `{table}` (
     `file_name` VARCHAR(500) NOT NULL COMMENT '文件名',
     `collect_time` VARCHAR(30) NOT NULL COMMENT '采集时间',
     `platform_time` VARCHAR(30) NOT NULL COMMENT '平台接收时间',
@@ -62,159 +20,37 @@ PROPERTIES (
     "enable_persistent_index" = "true"
 )
 """
-            cursor.execute(create_table_sql)
-            conn.commit()
-            cursor.close()
-            conn.close()
-            logger.info(f"[CsvStreamLoad] 建表成功: {self.config.TABLE}")
-            return True
-        except Exception as e:
-            logger.error(f"[CsvStreamLoad] 建表失败: {e}")
-            return False
 
-    def _send_stream_load(self, csv_data: str, label: str) -> int:
-        """执行单次Stream Load请求"""
-        auth_str = f"{self.config.USER}:{self.config.PD}"
-        auth_b64 = base64.b64encode(auth_str.encode('utf-8')).decode('ascii')
+CSV_COLUMNS = "file_name,collect_time,platform_time,signal_name,signal_value,insert_time"
 
-        headers = {
-            "Content-Type": "text/plain; charset=utf-8",
-            "Authorization": f"Basic {auth_b64}",
-            "Expect": "100-continue",
-            "label": label,
-            "columns": "file_name,collect_time,platform_time,signal_name,signal_value,insert_time",
-            "column_separator": "\\x01",
-            "format": "csv",
-            "skip_header": "0",
-            "strict_mode": "false",
-            "max_filter_ratio": "1.0",
-            "timeout": "600",
-        }
 
-        try:
-            no_proxy = {"http": None, "https": None}
-            url = self.stream_load_url
+class CsvStarRocksConfig(BaseStarRocksConfig):
+    TABLE = os.environ.get("SR_CSV_TABLE", "ods_csv_signal_data")
 
-            for redirect_count in range(5):
-                response = requests.put(
-                    url,
-                    headers=headers,
-                    data=csv_data.encode('utf-8'),
-                    timeout=600,
-                    proxies=no_proxy,
-                    allow_redirects=False,
-                )
 
-                if response.status_code != 307:
-                    break
-                location = response.headers.get('Location')
-                logger.debug(f" 307重定向到BE: {location}")
-                url = location
-            else:
-                raise Exception("重定向次数超过5次，放弃")
+class CsvStreamLoader(BaseStreamLoader):
+    label_prefix = "csv"
+    columns_header = CSV_COLUMNS
 
-        except requests.exceptions.RequestException as e:
-            logger.error(f"请求异常: {type(e).__name__}: {str(e)}")
-            raise
+    def __init__(self, config=None):
+        if config is None:
+            config = CsvStarRocksConfig()
+        super().__init__(config)
+        self.ddl_sql = CSV_DDL.format(table=self.config.TABLE)
 
-        if response.status_code not in (200, 201):
-            logger.error(f" StreamLoad HTTP错误: {response.status_code}")
-            logger.error(f"响应内容: {response.text[:2000]}")
-            raise Exception(f"HTTP {response.status_code}")
-
-        try:
-            result = response.json()
-        except Exception:
-            logger.error(f"JSON解析失败: {response.text[:2000]}")
-            raise
-
-        if result.get("Status") == "Success":
-            return int(result.get("NumberLoadedRows", 0))
-
-        msg = result.get("Message", "")
-        if "No partitions have data available" in msg or "empty" in msg.lower():
-            return 0
-
-        logger.error(f" StreamLoad错误: {msg}")
-        raise Exception(f"StreamLoad失败: {msg}")
-
-    def load_batch(self, batch_data: List[Dict], batch_idx: int) -> int:
-        """加载一批数据"""
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        timestamp = int(datetime.now().timestamp())
-        label = f"csv_{timestamp}_{batch_idx}"
-
+    def _format_row(self, item: Dict, current_time: str) -> str:
         sep = "\x01"
-        csv_lines = []
-        for item in batch_data:
-            csv_lines.append(
-                f'{item.get("file_name", "unknown")}{sep}'
-                f'{item.get("collect_time", "")}{sep}'
-                f'{item.get("platform_time", "")}{sep}'
-                f'{item.get("signal_name", "")}{sep}'
-                f'{item.get("signal_value", "")}{sep}'
-                f'{current_time}'
-            )
-        csv_data = "\n".join(csv_lines)
-
-        max_retries = 5
-        retry_delays = [5, 10, 30, 60]
-
-        for retry in range(max_retries):
-            try:
-                loaded = self._send_stream_load(csv_data, label)
-                logger.info(f" 批次 {batch_idx}: 写入成功 {loaded:,} 条")
-                return loaded
-            except Exception as e:
-                print(f"写入数据异常: {str(e)}")
-                if retry < max_retries - 1:
-                    delay = retry_delays[min(retry, len(retry_delays) - 1)]
-                    logger.warning(f" 批次 {batch_idx}: 第 {retry+1} 次失败，{delay}秒后重试")
-                    import time
-                    time.sleep(delay)
-                else:
-                    logger.error(f" 批次 {batch_idx}: 经过 {max_retries} 次尝试最终失败！")
-                    raise
+        return (
+            f'{item.get("file_name", "unknown")}{sep}'
+            f'{item.get("collect_time", "")}{sep}'
+            f'{item.get("platform_time", "")}{sep}'
+            f'{item.get("signal_name", "")}{sep}'
+            f'{item.get("signal_value", "")}{sep}'
+            f'{current_time}'
+        )
 
 
 class CsvDataWriter:
-    """CSV数据写入StarRocks入口"""
-
-    def __init__(self, config: Optional[CsvStarRocksConfig] = None):
+    def __init__(self, config=None):
         self.config = config or CsvStarRocksConfig()
         self.loader = CsvStreamLoader(self.config)
-        self.total_written = 0
-
-    def _batch_iterator(self, data: List[Dict]):
-        """数据分批迭代器"""
-        batch_size = self.config.STREAM_BATCH_SIZE
-        for i in range(0, len(data), batch_size):
-            yield data[i:i + batch_size]
-
-    def write_data(self, data: List[Dict]) -> int:
-        """写入所有数据"""
-        if not data:
-            logger.info("无数据可写入")
-            return 0
-
-        logger.info("=" * 70)
-        logger.info(f"准备使用StreamLoad写入 {len(data)} 条CSV信号数据")
-        logger.info("=" * 70)
-
-        if not self.loader._create_table():
-            raise Exception("建表失败")
-
-        self.total_written = 0
-        total_batches = (len(data) + self.config.STREAM_BATCH_SIZE - 1) // self.config.STREAM_BATCH_SIZE
-
-        logger.info(f"分 {total_batches} 批写入，每批约 {self.config.STREAM_BATCH_SIZE} 条")
-
-        for batch_idx, batch_data in enumerate(self._batch_iterator(data), 1):
-            logger.info(f"写入第 {batch_idx}/{total_batches} 批...")
-            self.total_written += self.loader.load_batch(batch_data, batch_idx)
-
-        logger.info("=" * 70)
-        logger.info(f" StreamLoad全部完成，共写入: {self.total_written} 条")
-        logger.info("=" * 70)
-
-        return self.total_written

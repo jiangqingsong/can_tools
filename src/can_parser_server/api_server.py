@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import uuid
 import time
@@ -8,12 +9,12 @@ from pathlib import Path
 from typing import Optional, Dict
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 
+BASE_DIR = Path(__file__).parent
+sys.path.insert(0, str(BASE_DIR.parent))
+
 from parsers import decode_asc, decode_blf, decode_csv
 
 app = FastAPI(title="CAN Data Parser Service", version="2.0.0")
-
-# 项目路径
-BASE_DIR = Path(__file__).parent
 CONFIG_DIR = BASE_DIR / "config"
 DBC_DIR = BASE_DIR / "dbc_files"
 TEMP_DIR = "./temp_uploads"
