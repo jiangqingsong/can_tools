@@ -81,16 +81,16 @@
 
 ---
 
-## Phase 7：技术债清理（待排期）⬜
+## Phase 7：技术债清理 ⬜
 
 | 编号 | 任务 | 说明 | 状态 |
 |------|------|------|------|
-| 7.1 | 抽取 ASC/BLF 解析器共用基类 | asc_parser 和 blf_parser 仅 Reader 类型不同，其余逻辑完全一致 | ⬜ |
-| 7.2 | 抽取 Writer 共用 Stream Load 组件 | can_2_sr 和 csv_2_sr 的 Stream Load + 重试逻辑几乎完全一致 | ⬜ |
+| 7.1 | 抽取 ASC/BLF 解析器共用基类 | asc_parser 和 blf_parser 仅 Reader 类型不同，其余逻辑完全一致 | ✅ |
+| 7.2 | 抽取 Writer 共用 Stream Load 组件 | can_2_sr 和 csv_2_sr 的 Stream Load + 重试逻辑几乎完全一致 | ✅ |
 | 7.3 | 补充单元测试 | parser 和 writer 缺少测试覆盖 | ⬜ |
-| 7.4 | 清理 main.py 无用桩代码 | 实际入口为 api_server.py，main.py 无实际功能 | ⬜ |
+| 7.4 | 清理 main.py 无用桩代码 | 实际入口为 api_server.py，main.py 无实际功能 | ✅ |
 | 7.5 | 任务持久化 | 当前任务存储在内存 dict 中，服务重启后历史丢失 | ⬜ |
-| 7.6 | 修复 parser 模块中的 sys.path hack | 通过 sys.path.insert 导入 writer，应改为相对导入 | ⬜ |
+| 7.6 | 修复 parser 模块中的 sys.path hack | 通过 sys.path.insert 导入 writer，已移至 api_server.py 入口 | ✅ |
 
 ---
 
@@ -104,6 +104,6 @@
 | Phase 4 | API 服务实现 | ✅ 已完成 |
 | Phase 5 | 文档补齐 | ✅ 已完成 |
 | Phase 6 | 分析场景模型 | ✅ 已完成 |
-| Phase 7 | 技术债清理 | ⬜ 待排期 |
+| Phase 7 | 技术债清理 | 🔄 部分完成（7.1/7.2/7.4/7.6 已完成，7.3/7.5 待排期） |
 
-**下一优先事项：** Phase 7 — 技术债清理
+**下一优先事项：** 7.3 单元测试 / 7.5 任务持久化
